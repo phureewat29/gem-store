@@ -1,0 +1,67 @@
+version: '3.9'
+
+services:
+  gateway:
+    container_name: gateway_service
+    build:
+      context: .
+      target: production
+      dockerfile: ./apps/gateway/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
+    depends_on:
+      - user
+      - ledger
+      - postgres
+      - rabbit
+  user:
+    container_name: user_service
+    build:
+      context: .
+      target: production
+      dockerfile: ./apps/user/Dockerfile
+    depends_on:
+      - postgres
+      - rabbit
+  ledger:
+    container_name: ledger_service
+    build:
+      context: .
+      target: production
+      dockerfile: ./apps/ledger/Dockerfile
+    depends_on:
+      - user
+      - postgres
+      - rabbit
+  rabbit:
+    container_name: rabbit
+    image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBIT_MQ_USERNAME}
+      - RABBITMQ_DEFAULT_PASS=${RABBIT_MQ_PASSWORD}
+    ports:
+      - "${RABBIT_MQ_PORT}:5672"
+      - "${RABBIT_MQ_MANAGER_PORT}:15672"
+  postgres:
+    container_name: postgres
+    image: postgres:14
+    environment:
+      - POSTGRES_USER=${POSTGRES_DB_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_DB_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB_NAME}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "${POSTGRES_DB_PORT}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  db_manager:
+    container_name: db_manager
+    image: adminer
+    ports:
+      - '${DB_MANAGER_PORT}:8080'
+
+volumes:
+  postgres-data:
+    driver: local
