@@ -5,7 +5,7 @@ services:
     container_name: gateway_service
     build:
       context: .
-      target: production
+      target: ${NODE_ENV}
       dockerfile: ./apps/gateway/Dockerfile
     env_file:
       - .env
@@ -20,8 +20,10 @@ services:
     container_name: user_service
     build:
       context: .
-      target: production
+      target: ${NODE_ENV}
       dockerfile: ./apps/user/Dockerfile
+    env_file:
+      - .env
     depends_on:
       - postgres
       - rabbit
@@ -29,18 +31,22 @@ services:
     container_name: ledger_service
     build:
       context: .
-      target: production
+      target: ${NODE_ENV}
       dockerfile: ./apps/ledger/Dockerfile
+    env_file:
+      - .env
     depends_on:
       - user
       - postgres
       - rabbit
   rabbit:
     container_name: rabbit
-    image: rabbitmq:management
+    image: rabbitmq:3-management
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBIT_MQ_USERNAME}
       - RABBITMQ_DEFAULT_PASS=${RABBIT_MQ_PASSWORD}
+    env_file:
+      - .env
     ports:
       - "${RABBIT_MQ_PORT}:5672"
       - "${RABBIT_MQ_MANAGER_PORT}:15672"
@@ -52,6 +58,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_DB_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB_NAME}
       - PGDATA=/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
     ports:
       - "${POSTGRES_DB_PORT}:5432"
     volumes:
@@ -65,3 +73,7 @@ services:
 volumes:
   postgres-data:
     driver: local
+
+networks:
+  default:
+    driver: bridge
