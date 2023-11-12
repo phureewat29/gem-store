@@ -11,8 +11,12 @@ import {
 } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from '@app/common';
+import { initTracing } from '@app/observability';
 
 async function bootstrap() {
+  // * observability
+  await initTracing();
+
   const app = await NestFactory.create<NestExpressApplication>(GatewayModule);
 
   // * config

@@ -7,6 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(LedgerModule);
 
   // * setup
+  app.setGlobalPrefix('api');
   app.connectMicroservice<MicroserviceOptions>(
     app.get<MicroserviceOptions>(RABBIT_SERVICE_OPTIONS),
   );

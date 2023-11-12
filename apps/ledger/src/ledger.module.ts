@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { LedgerController } from './ledger.controller';
 import { RabbitModule, RabbitServiceName } from '@app/rabbit';
+import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '@app/database';
 import { LedgerEntity } from './entity/ledger.entity';
 import { EntryEntity } from './entity/entry.entity';
@@ -9,6 +10,9 @@ import { EntryService } from './service/entry.service';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: './.env',
+    }),
     DatabaseModule.register(),
     DatabaseModule.forEntity([LedgerEntity, EntryEntity]),
     RabbitModule.forServerProxy(RabbitServiceName.LEDGER),

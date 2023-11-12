@@ -49,6 +49,9 @@
       "@app/authentication/*": [
         "libs/authentication/src/*"
       ],
+      "@app/observability": [
+        "libs/observability/src"
+      ],
     }
   }
 }
