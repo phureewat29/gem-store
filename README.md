@@ -19,18 +19,21 @@ The project built using TypeScript, with the technical blueprint to follow micro
 
 ## Project Structure
 The project is organized as follows:
-- `apps`:
-  - `gateway`: API gateway for managing incoming HTTP requests.
-  - `user`: Microservice handling user-related operations.
-  - `ledger`: Microservice managing in-game currency transactions.
 
-- `libs`:
-  - `authentication`: Guards and decorators for user authentication.
-  - `common`: Shared utilities and constants.
-  - `database`: Manages database connections and queries.
-  - `rabbit`: Provides RabbitMQ integration.
-  - `token`: Handles JWT token generation and verification.
-  - `observability`: Distributed request tracing and exporter to Jeager
+```
+├── apps
+│   ├── gateway - API gateway for managing incoming HTTP requests.
+│   ├── ledger - Microservice managing in-game currency transactions.
+│   └── user - Microservice handling user-related operations.
+├── libs
+│   ├── authentication - Guards and decorators for user authentication.
+│   ├── common - Shared utilities and constants.
+│   ├── database - Manages database connections and queries.
+│   ├── observability - Distributed request tracing and exporter to Jeager
+│   ├── rabbit - Provides RabbitMQ integration.
+│   └── token - Manages database connections and queries.
+├── docker-compose.yaml
+```
 
 ## Installation
 1. Copy .env.example to .env
@@ -122,3 +125,6 @@ curl --location 'http://localhost:3000/api/ledgers/transfer' \
 curl --location 'http://localhost:3000/api/ledgers/entries?type=debit&limit=50&page=1&currency=gem' \
 --header 'Authorization: Bearer <TOKEN>'
 ```
+
+## License
+MIT
