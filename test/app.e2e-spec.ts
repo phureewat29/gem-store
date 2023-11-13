@@ -102,7 +102,7 @@ describe('Gem Store (e2e)', () => {
     // query ledger entries of userA
     await checkLedgerEntries('credit', '10.50');
 
-    // authorize as userB
+    // re-authenticate as userB
     instance.defaults.headers.common['Authorization'] = `Bearer ${userB.token}`;
 
     // check userB ledger balance
