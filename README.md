@@ -1,6 +1,6 @@
 # GEM STORE
 
-Gem Store is an in-game currency platform designed to allow users to register, authenticate, transfer GEM to another user, and manage their ledgers. Built with TypeScript, with the technical blueprint to follow microservice best practices to ensure a scalable and efficient architecture, leverages RabbitMQ as the transport protocol to facilitate communication between services.
+Gem Store is an in-game currency platform designed to allow users to register, authenticate, transfer GEM to another user, and manage their ledgers. The project built with TypeScript, with the technical blueprint to ensure a scalable and efficient microservices architecture, leverages RabbitMQ as the transport protocol to facilitate communication between services.
 
 ## Technical Features
 - 💜 Langauge: TypeScript
@@ -14,6 +14,7 @@ Gem Store is an in-game currency platform designed to allow users to register, a
 - 🔢 API pagination (limit & page as query params)
 - 📚 API documentation with Swagger
 - 👀 Observability technique using OpenTelemetry
+- ➰ E2E test suite
 
 ## Project Structure
 The project is organized as follows:
