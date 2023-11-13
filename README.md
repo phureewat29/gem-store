@@ -69,6 +69,14 @@ Once the project is up and running, you should be able to access the API documme
 ## Debugging
 For debugging, you can also access http://localhost:16686/ to monitor the request with Jeager
 
+## Run E2E Test
+
+Ensure to start all services before run an E2E test.
+
+```bash
+npm run test:e2e
+```
+
 
 ## Endpoints
 
@@ -103,7 +111,7 @@ curl --location --request GET 'http://localhost:3000/api/users/me' \
 ### Ledgers
 `GET /api/ledgers` - List all user ledgers.
 ```bash
-curl --location --request GET 'http://localhost:3000/api/users/me' \
+curl --location --request GET 'http://localhost:3000/api/ledgers' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer <TOKEN>'
 ```
