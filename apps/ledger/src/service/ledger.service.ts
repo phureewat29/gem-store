@@ -1,18 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LedgerEntity } from '../entity/ledger.entity';
-import { Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import { TransferDto } from '../dto/transfer.dto';
 import { IServiceResponse } from '@app/rabbit';
 import { UserEntity } from 'apps/user/src/entity/user.entity';
 import { EntryService } from './entry.service';
 import { CreateLedgerDto } from '../dto/create-ledger.dto';
+import { EntryEntity } from '../entity/entry.entity';
 
 @Injectable()
 export class LedgerService {
   constructor(
     @InjectRepository(LedgerEntity)
     private ledgerRepository: Repository<LedgerEntity>,
+    @InjectRepository(EntryEntity)
+    private entryRepository: Repository<EntryEntity>,
+    private connection: Connection,
     private entryService: EntryService,
   ) {}
 
@@ -63,7 +67,7 @@ export class LedgerService {
       currency,
     });
 
-    await this.entryService.createTransferEntries(
+    const { data: entries } = await this.entryService.buildTransferEntries(
       fromLedger,
       toLedger,
       amount,
@@ -72,7 +76,20 @@ export class LedgerService {
 
     fromLedger.balance = +fromLedger.balance - amount;
     toLedger.balance = +toLedger.balance + amount;
-    await this.ledgerRepository.save([fromLedger, toLedger]);
+
+    // perform an atomic transaction
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await this.entryRepository.save(entries);
+      await this.ledgerRepository.save([fromLedger, toLedger]);
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
 
     return {
       state: true,

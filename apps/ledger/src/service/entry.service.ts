@@ -15,7 +15,7 @@ export class EntryService {
     private entryRepository: Repository<EntryEntity>,
   ) {}
 
-  async createTransferEntries(
+  async buildTransferEntries(
     fromLedger,
     toLedger,
     amount,
@@ -35,7 +35,7 @@ export class EntryService {
         currency,
       }),
     ];
-    await this.entryRepository.save(entries);
+
     return {
       state: true,
       data: entries,
@@ -46,19 +46,17 @@ export class EntryService {
     { limit, page, type, currency }: FindEntiresDto,
     user: UserEntity,
   ): Promise<IServiceResponse<IPagination<EntryEntity>>> {
-    const where = [
-      type ? { type } : null,
-      currency ? { currency } : null,
-      { ledger: { user: { id: user.id } } },
-    ];
-    const entries = await this.entryRepository.find({
-      relations: ['ledger.user'],
-      where,
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    const query = this.entryRepository
+      .createQueryBuilder('entries')
+      .leftJoin('entries.ledger', 'ledger')
+      .where([type ? { type } : null, currency ? { currency } : null])
+      .andWhere('ledger.userId = :userId', { userId: user.id })
+      .skip((page - 1) * limit)
+      .take(limit);
 
-    const entiresCount = await this.entryRepository.count({ where });
+    const entries = await query.execute();
+    const entiresCount = await query.getCount();
+
     return {
       state: true,
       data: {
